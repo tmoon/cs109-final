@@ -60,8 +60,10 @@ def get_table(pid):
 	print '\n', time.time() - t0
 if __name__ == '__main__':
 
-	df = pd.read_pickle('data.pkl')
-	items = df.prod_id[:1000]
+	# df = pd.read_pickle('data.pkl')
+	# items = df.prod_id[:1000]
+	# items.to_pickle('arr.pkl')
+	items = pd.read_pickle('arr.pkl')
 	df = 1
 	print 'done with huge df!'
 	for pid in items:
