@@ -5,7 +5,7 @@ import time
 import pandas as pd
 # import cPickle as pickle
 import random
-from time_convert import convert_UTC
+# from time_convert import convert_UTC
 import numpy as np
 random.seed(42)
 import os, sys
