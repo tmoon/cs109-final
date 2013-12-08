@@ -11,6 +11,9 @@ random.seed(42)
 import os, sys
 
 def get_random_agent():
+	"""returns one of the random browser metadata for bypassing 
+		ebay's anti scrapping AI
+	"""
 	USER_AGENT_LIST = [
 	    'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.7 \
 	         (KHTML, like Gecko) Chrome/16.0.912.36 Safari/535.7',
@@ -29,9 +32,11 @@ def get_random_agent():
 	return random.choice(USER_AGENT_LIST)
 
 def get_url(pid):
+	"""get url from product id"""
 	return 'http://offer.ebay.com/ws/eBayISAPI.dll?ViewBids&item='+str(pid)+'&showauto=true'
 
 def get_req_instance(u):
+	"""create a proxy enabled and random brwoser mimicking request instance"""
 	HTTP_PROXY ={"http":'http://127.0.0.1:8123'}
 	return requests.get(u, headers = {'user-agent': get_random_agent}, proxies=HTTP_PROXY)
 
@@ -128,15 +133,18 @@ if __name__ == '__main__':
 		except Exception, e:
 			print 'ERROR!', e
 			ferrror.write(str(pid)+'\n')
-			# restart the network to update ip
+
+			# restart the network to update ip if necessary
 			command = 'echo '+str(sys.argv[1])+' | sudo -S service network-manager restart'
 			os.system(command)
 			err += 1
-		r = random.random()
-		time.sleep(r * 1.5)
+
 		old_t = t
 		t = time.time() - t0
-		print t - old_t
+		t_1 = t - old_t
+
+		r = max(0.1, 2.0 - random.random() * 1.5)
+		time.sleep(r)
 		print 'scrapped %d items (failed %d), current item id %s, time elapsed %f' % (k, err, pid, t)
 		print '\n ------------------------------- \n'
 
