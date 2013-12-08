@@ -102,26 +102,30 @@ if __name__ == '__main__':
 	# df = pd.read_pickle('data.pkl')
 	# items = df.prod_id[:1000]
 	# items.to_pickle('arr.pkl')
-	items = pd.read_pickle('arr.pkl')
-	df = 1
-	pid = 331077709269
-	get_table(pid)
+	items = pd.read_pickle('big_arr.pkl')
+	print len(items)
 	
 	basic_info = []
 	time_series = {}
 	t0 = time.time()
-	for k, pid in enumerate(items):
+	t = 0
+	for k, pid in enumerate(items[:28000]):
 
-		itm_info, arr = np.array(get_table(pid))
+		try:
+			itm_info, arr = np.array(get_table(pid))
+			time_series[pid] = arr
+			basic_info.append(itm_info)
+		except Exception, e:
+			print 'ERROR!', e
 
-		time_series[pid] = arr
-		basic_info.append(itm_info)
 		# time.sleep(1)
+		old_t = t
 		t = time.time() - t0
+		print t - old_t
 		print 'scrapped %d items, current item id %s, time elapsed %f' % (k, pid, t)
 		print '\n ------------------------------- \n'
 
-		if k % 100 == 0:
+		if k % 100 == 99:
 			pickle.dump( basic_info, open( "./data/basic_"+str(k/100)+".pkl", "wb" ) )
 			pickle.dump( time_series, open( "./data/time_series_"+str(k/100)+".pkl", "wb" ) )
 			basic_info = []
