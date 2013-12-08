@@ -8,6 +8,7 @@ import random
 from time_convert import convert_UTC
 import numpy as np
 random.seed(42)
+import os, sys
 
 def get_random_agent():
 	USER_AGENT_LIST = [
@@ -19,7 +20,11 @@ def get_random_agent():
 	       (KHTML, like Gecko) Version/5.1.3 Safari/534.53.10',
 	    "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0b4pre) Gecko/20100815 Minefield/4.0b4pre",
 	    "Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14",
-	    "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.2; WOW64; Trident/5.0)"
+	    "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.2; WOW64; Trident/5.0)",
+	    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.7 \
+	    	(KHTML, like Gecko) Chrome/16.0.912.36 Safari/535.7",
+	    "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0b4pre) Gecko/20100815 Minefield/4.0b4pre"
+
 	]
 	return random.choice(USER_AGENT_LIST)
 
@@ -123,6 +128,9 @@ if __name__ == '__main__':
 		except Exception, e:
 			print 'ERROR!', e
 			ferrror.write(str(pid)+'\n')
+			# restart the network to update ip
+			command = 'echo '+str(sys.argv[1])+' | sudo -S service network-manager restart'
+			os.system(command)
 			err += 1
 
 		# time.sleep(1)

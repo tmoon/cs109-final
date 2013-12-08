@@ -57,6 +57,13 @@ import cPickle as pickle
 # pickle.dump( uids, open( "big_arr.pkl", "wb" ) )
 uids = pickle.load(open( "./big_arr.pkl", "rb" ))
 print len(uids)
+
+import os, sys
+
+print str(sys.argv[1])
+command = 'echo '+str(sys.argv[1])+' | sudo -S service network-manager restart'
+os.system(command)
+
 # items = df.prod_id[200:300]
 # # url_arr = []
 # for pid in items:
