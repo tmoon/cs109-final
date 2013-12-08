@@ -119,8 +119,8 @@ if __name__ == '__main__':
 	t = 0
 	ferrror = open('error_log.txt','w')
 	err = 0
-	for k, pid in enumerate(items[:25000]):
-		k = k
+	for k, pid in enumerate(items[2751:25000]):
+		k = k + 2751
 		try:
 			itm_info, arr = get_table(pid)
 			time_series.extend(arr)
@@ -132,8 +132,8 @@ if __name__ == '__main__':
 			command = 'echo '+str(sys.argv[1])+' | sudo -S service network-manager restart'
 			os.system(command)
 			err += 1
-
-		# time.sleep(1)
+		r = random.random()
+		time.sleep(r * 1.5)
 		old_t = t
 		t = time.time() - t0
 		print t - old_t
