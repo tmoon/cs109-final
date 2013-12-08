@@ -50,23 +50,28 @@ USER_AGENT_LIST = [
 
 
 import pandas as pd
+import cPickle as pickle
+# df = pd.read_pickle('data.pkl')
+# print df
+# uids = df.prod_id.unique()
+# pickle.dump( uids, open( "big_arr.pkl", "wb" ) )
+uids = pickle.load(open( "./big_arr.pkl", "rb" ))
+print len(uids)
+# items = df.prod_id[200:300]
+# # url_arr = []
+# for pid in items:
+# 	url_arr.append('http://offer.ebay.com/ws/eBayISAPI.dll?ViewBids&item='+str(pid)+'&showauto=true')
 
-df = pd.read_pickle('data.pkl')
-items = df.prod_id[200:300]
-url_arr = []
-for pid in items:
-	url_arr.append('http://offer.ebay.com/ws/eBayISAPI.dll?ViewBids&item='+str(pid)+'&showauto=true')
+# anyc_reqs = []
+# for u in url_arr:
+# 	page = grequests.get(u, headers = {'user-agent': random.choice(USER_AGENT_LIST)}, proxies=HTTP_PROXY)
+# 	anyc_reqs.append(page)
 
-anyc_reqs = []
-for u in url_arr:
-	page = grequests.get(u, headers = {'user-agent': random.choice(USER_AGENT_LIST)}, proxies=HTTP_PROXY)
-	anyc_reqs.append(page)
-
-for r in grequests.map(anyc_reqs, size = 8):
-	# print r.url
-    print r.text[:10], '\n'
+# for r in grequests.map(anyc_reqs, size = 8):
+# 	# print r.url
+#     print r.text[:10], '\n'
 
 
-r = requests.get('http://offer.ebay.com/ws/eBayISAPI.dll?ViewBids&item=111216505626&showauto=true', headers={'pid':'111216505626'})
+# r = requests.get('http://offer.ebay.com/ws/eBayISAPI.dll?ViewBids&item=111216505626&showauto=true', headers={'pid':'111216505626'})
 
-print r.request.headers['pid']
+# print r.request.headers['pid']

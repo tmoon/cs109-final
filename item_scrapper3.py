@@ -3,8 +3,10 @@ import requests, grequests
 from lxml.cssselect import CSSSelector
 import time
 import pandas as pd
+import cPickle as pickle
 import random
-
+from time_convert import convert_UTC
+import numpy as np
 random.seed(42)
 
 def get_random_agent():
@@ -29,14 +31,45 @@ def getNameBid(content):
 	itemText = content.cssselect('a.BHitemDesc')[0].text_content()
 	winningBid = content.cssselect('td.BHctBidVal')[0].text_content()
 
-	return itemText, winningBid
+	return itemText.replace("Item Title: ", ""), winningBid
 
 def headVals(content):
 	return [s.text_content().strip() for s in content.cssselect('span.titleValueFont')]
-def contentVals(content):
-	return [s.text_content().strip() for s in content.cssselect('td.newcontentValueFont')]
-def getMembers(content):
-	return [s.text_content().strip() for s in content.cssselect('td.onheadNav')]
+# def contentVals(content):
+# 	return [s.text_content().strip() for s in content.cssselect('td.newcontentValueFont')]
+# def getMembers(content):
+# 	return [s.text_content().strip() for s in content.cssselect('td.onheadNav')]
+def get_rows(content):
+	rows = content.cssselect('tr')[1:]
+	info_arr = []
+	for r in rows:
+		auto = 1
+	
+		if r.get('class') == None:
+			auto = 0
+		if r.get('id') == 'viznobrd':
+			auto = -1
+
+		if auto == 1:
+			vals = [s.text_content().strip() for s in r.cssselect('td.newcontentValueFont')]
+		elif auto == 0:
+			vals = [r.cssselect('td.onheadNav')[0].text_content().strip()]
+			vals.extend([s.text_content().strip() for s in r.cssselect('td.contentValueFont')])
+			if vals[0][:10] == 'Member Id:':
+				vals[0] = vals[0][11:]
+		else:
+			vals = ['Starting Price']
+			vals.extend([s.text_content().strip() for s in r.cssselect('td.contentValueFont')])
+
+		assert (len(vals) == 3)
+		vals.append(auto)
+		info_arr.append(vals)
+
+	return info_arr
+
+
+def get_bid_table(content):
+	return content.cssselect('div#vizrefdiv')[0]
 
 def get_table(pid):
 	url = get_url(pid)
@@ -47,17 +80,23 @@ def get_table(pid):
 	sel = CSSSelector('div.BHbidSecBorderGrey')
 	res = sel(tree)
 
-	# print getNameBid(res[0])
-	# print html.tostring(res[1])
-	print headVals(res[1])
-	bids =  contentVals(res[1])
-	members = getMembers(res[1])
+	itm_info = [pid]
+	name_price = getNameBid(res[0])
+	itm_info.extend(name_price)
+	
+	bid_data = headVals(res[1])
+	itm_info.extend(bid_data)
+
+	# bids =  contentVals(res[1])
+	# members = getMembers(res[1])
 
 	# print bids
 
-	for i in range(len(bids)/3):
-		print bids[3*i], bids[3*i + 1], bids[3*i +2 ]
-	print '\n', time.time() - t0
+	# for i in range(len(bids)/3):
+	# 	print bids[3*i], bids[3*i + 1], bids[3*i +2 ]
+	# print '\n', time.time() - t0
+	tab = get_bid_table(res[1])
+	return itm_info, get_rows(tab)
 if __name__ == '__main__':
 
 	# df = pd.read_pickle('data.pkl')
@@ -65,9 +104,30 @@ if __name__ == '__main__':
 	# items.to_pickle('arr.pkl')
 	items = pd.read_pickle('arr.pkl')
 	df = 1
-	print 'done with huge df!'
-	for pid in items:
-		print '\n ------------------------------- \n'
-		get_table(pid)		
+	pid = 331077709269
+	get_table(pid)
+	
+	basic_info = []
+	time_series = {}
+	t0 = time.time()
+	for k, pid in enumerate(items):
+
+		itm_info, arr = np.array(get_table(pid))
+
+		time_series[pid] = arr
+		basic_info.append(itm_info)
 		# time.sleep(1)
-		print '\n'
+		t = time.time() - t0
+		print 'scrapped %d items, current item id %s, time elapsed %f' % (k, pid, t)
+		print '\n ------------------------------- \n'
+
+		if k % 100 == 0:
+			pickle.dump( basic_info, open( "./data/basic_"+str(k/100)+".pkl", "wb" ) )
+			pickle.dump( time_series, open( "./data/time_series_"+str(k/100)+".pkl", "wb" ) )
+			basic_info = []
+			time_series = {}
+	# end for
+	# dump the last batch
+	pickle.dump( basic_info, open( "./data/basic_last.pkl", "wb" ) )
+	pickle.dump( time_series, open( "./data/time_series_last.pkl", "wb" ) )
+	
