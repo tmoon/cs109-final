@@ -16,7 +16,10 @@ def get_random_agent():
 	    'Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:16.0) \
 	       Gecko/16.0 Firefox/16.0',
 	    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3 \
-	       (KHTML, like Gecko) Version/5.1.3 Safari/534.53.10'
+	       (KHTML, like Gecko) Version/5.1.3 Safari/534.53.10',
+	    "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0b4pre) Gecko/20100815 Minefield/4.0b4pre",
+	    "Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14",
+	    "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.2; WOW64; Trident/5.0)"
 	]
 	return random.choice(USER_AGENT_LIST)
 
@@ -128,26 +131,30 @@ if __name__ == '__main__':
 		print t - old_t
 		print 'scrapped %d items (failed %d), current item id %s, time elapsed %f' % (k, err, pid, t)
 		print '\n ------------------------------- \n'
-	
-	basic_info = np.array(basic_info)
-	time_series = np.array(time_series)
 
-	df_basic = pd.DataFrame({'prod_id': basic_info[:,0], 'prod_title': basic_info[:,1], 'price': basic_info[:,2], 'bidders': basic_info[:,3], \
-		'bids': basic_info[:,4], 'end_time': basic_info[:,5], 'duration': basic_info[:,6]})
-	print df_basic.head()
-	df_ts = pd.DataFrame({'prod_id': time_series[:,4],'bidder': time_series[:,0],'bid_amount': time_series[:,1],\
-		'bid_time': time_series[:,2], 'auto_flag': time_series[:,3]})
-	print df_ts.head()
-	# save everything
-	try:
-		df_basic.to_csv('basic_big.csv', sep='\t')
-	except Exception, e:
-		print e
+		if k % 250 == 0 and k > 0:
+			basic_info = np.array(basic_info)
+			time_series = np.array(time_series)
 
-	try:
-		df_ts.to_csv('ts_big.csv', sep='\t')
-	except Exception, e:
-		print e
+			df_basic = pd.DataFrame({'prod_id': basic_info[:,0], 'prod_title': basic_info[:,1], 'price': basic_info[:,2], 'bidders': basic_info[:,3], \
+				'bids': basic_info[:,4], 'end_time': basic_info[:,5], 'duration': basic_info[:,6]})
+			print df_basic.head()
+			df_ts = pd.DataFrame({'prod_id': time_series[:,4],'bidder': time_series[:,0],'bid_amount': time_series[:,1],\
+				'bid_time': time_series[:,2], 'auto_flag': time_series[:,3]})
+			print df_ts.head()
+			# reser buffers
+			basic_info = []
+			time_series = []
+			# save everything
+			try:
+				df_basic.to_csv('./data/basic_'+str(k/250)+'.csv', sep='\t', index=False, header = False)
+			except Exception, e:
+				print e
+
+			try:
+				df_ts.to_csv('./data/ts_'+str(k/250)+'.csv', sep='\t', index=False, header = False)
+			except Exception, e:
+				print e
 
 	# 	if k % 100 == 99:
 	# 		pickle.dump( basic_info, open( "./data/basic_"+str(k/100)+".pkl", "wb" ) )
