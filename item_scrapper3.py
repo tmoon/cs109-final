@@ -3,7 +3,7 @@ import requests, grequests
 from lxml.cssselect import CSSSelector
 import time
 import pandas as pd
-import cPickle as pickle
+# import cPickle as pickle
 import random
 from time_convert import convert_UTC
 import numpy as np
@@ -39,7 +39,7 @@ def headVals(content):
 # 	return [s.text_content().strip() for s in content.cssselect('td.newcontentValueFont')]
 # def getMembers(content):
 # 	return [s.text_content().strip() for s in content.cssselect('td.onheadNav')]
-def get_rows(content):
+def get_rows(content, pid):
 	rows = content.cssselect('tr')[1:]
 	info_arr = []
 	for r in rows:
@@ -63,8 +63,8 @@ def get_rows(content):
 
 		assert (len(vals) == 3)
 		vals.append(auto)
+		vals.append(int(pid))
 		info_arr.append(vals)
-
 	return info_arr
 
 
@@ -96,7 +96,7 @@ def get_table(pid):
 	# 	print bids[3*i], bids[3*i + 1], bids[3*i +2 ]
 	# print '\n', time.time() - t0
 	tab = get_bid_table(res[1])
-	return itm_info, get_rows(tab)
+	return itm_info, get_rows(tab, pid)
 if __name__ == '__main__':
 
 	# df = pd.read_pickle('data.pkl')
@@ -106,32 +106,56 @@ if __name__ == '__main__':
 	print len(items)
 	
 	basic_info = []
-	time_series = {}
+	time_series = []
 	t0 = time.time()
 	t = 0
-	for k, pid in enumerate(items[:28000]):
-
+	ferrror = open('error_log.txt','w')
+	err = 0
+	for k, pid in enumerate(items[:25000]):
+		k = k
 		try:
-			itm_info, arr = np.array(get_table(pid))
-			time_series[pid] = arr
+			itm_info, arr = get_table(pid)
+			time_series.extend(arr)
 			basic_info.append(itm_info)
 		except Exception, e:
 			print 'ERROR!', e
+			ferrror.write(str(pid)+'\n')
+			err += 1
 
 		# time.sleep(1)
 		old_t = t
 		t = time.time() - t0
 		print t - old_t
-		print 'scrapped %d items, current item id %s, time elapsed %f' % (k, pid, t)
+		print 'scrapped %d items (failed %d), current item id %s, time elapsed %f' % (k, err, pid, t)
 		print '\n ------------------------------- \n'
+	
+	basic_info = np.array(basic_info)
+	time_series = np.array(time_series)
 
-		if k % 100 == 99:
-			pickle.dump( basic_info, open( "./data/basic_"+str(k/100)+".pkl", "wb" ) )
-			pickle.dump( time_series, open( "./data/time_series_"+str(k/100)+".pkl", "wb" ) )
-			basic_info = []
-			time_series = {}
-	# end for
-	# dump the last batch
-	pickle.dump( basic_info, open( "./data/basic_last.pkl", "wb" ) )
-	pickle.dump( time_series, open( "./data/time_series_last.pkl", "wb" ) )
+	df_basic = pd.DataFrame({'prod_id': basic_info[:,0], 'prod_title': basic_info[:,1], 'price': basic_info[:,2], 'bidders': basic_info[:,3], \
+		'bids': basic_info[:,4], 'end_time': basic_info[:,5], 'duration': basic_info[:,6]})
+	print df_basic.head()
+	df_ts = pd.DataFrame({'prod_id': time_series[:,4],'bidder': time_series[:,0],'bid_amount': time_series[:,1],\
+		'bid_time': time_series[:,2], 'auto_flag': time_series[:,3]})
+	print df_ts.head()
+	# save everything
+	try:
+		df_basic.to_csv('basic_big.csv', sep='\t')
+	except Exception, e:
+		print e
+
+	try:
+		df_ts.to_csv('ts_big.csv', sep='\t')
+	except Exception, e:
+		print e
+
+	# 	if k % 100 == 99:
+	# 		pickle.dump( basic_info, open( "./data/basic_"+str(k/100)+".pkl", "wb" ) )
+	# 		pickle.dump( time_series, open( "./data/time_series_"+str(k/100)+".pkl", "wb" ) )
+	# 		basic_info = []
+	# 		time_series = {}
+	# # end for
+	# # dump the last batch
+	# pickle.dump( basic_info, open( "./data/basic_last.pkl", "wb" ) )
+	# pickle.dump( time_series, open( "./data/time_series_last.pkl", "wb" ) )
 	
