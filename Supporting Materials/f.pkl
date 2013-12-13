@@ -1,0 +1,143 @@
+(lp1
+(lp2
+V Ford
+p3
+aV Chevrolet
+p4
+aV Dodge
+p5
+aV Mercedes-Benz
+p6
+aV BMW
+p7
+aV Toyota
+p8
+aV Jeep
+p9
+aV Cadillac
+p10
+aV Volkswagen
+p11
+aV Honda
+p12
+aV AC
+p13
+aV Pontiac
+p14
+aV Nissan
+p15
+aV Chrysler
+p16
+aV GMC
+p17
+aV Lincoln
+p18
+aV Buick
+p19
+aV Audi
+p20
+aV Volvo
+p21
+aV Subaru
+p22
+aS'Other'
+p23
+aa(lp24
+cnumpy.core.multiarray
+scalar
+p25
+(cnumpy
+dtype
+p26
+(S'i8'
+I0
+I1
+tRp27
+(I3
+S'<'
+NNNI-1
+I-1
+I0
+tbS'\xef\x1f\x00\x00\x00\x00\x00\x00'
+tRp28
+ag25
+(g27
+S'\x1f\x19\x00\x00\x00\x00\x00\x00'
+tRp29
+ag25
+(g27
+S'\x80\t\x00\x00\x00\x00\x00\x00'
+tRp30
+ag25
+(g27
+S'\x1b\t\x00\x00\x00\x00\x00\x00'
+tRp31
+ag25
+(g27
+S'\xac\x07\x00\x00\x00\x00\x00\x00'
+tRp32
+ag25
+(g27
+S'\x11\x07\x00\x00\x00\x00\x00\x00'
+tRp33
+ag25
+(g27
+S'\x81\x06\x00\x00\x00\x00\x00\x00'
+tRp34
+ag25
+(g27
+S'\x85\x05\x00\x00\x00\x00\x00\x00'
+tRp35
+ag25
+(g27
+S'(\x05\x00\x00\x00\x00\x00\x00'
+tRp36
+ag25
+(g27
+S'\xaa\x04\x00\x00\x00\x00\x00\x00'
+tRp37
+ag25
+(g27
+S'}\x04\x00\x00\x00\x00\x00\x00'
+tRp38
+ag25
+(g27
+S'\r\x04\x00\x00\x00\x00\x00\x00'
+tRp39
+ag25
+(g27
+S'\xe9\x03\x00\x00\x00\x00\x00\x00'
+tRp40
+ag25
+(g27
+S'=\x03\x00\x00\x00\x00\x00\x00'
+tRp41
+ag25
+(g27
+S'*\x03\x00\x00\x00\x00\x00\x00'
+tRp42
+ag25
+(g27
+S'\x88\x02\x00\x00\x00\x00\x00\x00'
+tRp43
+ag25
+(g27
+S'u\x02\x00\x00\x00\x00\x00\x00'
+tRp44
+ag25
+(g27
+S'K\x02\x00\x00\x00\x00\x00\x00'
+tRp45
+ag25
+(g27
+S'@\x02\x00\x00\x00\x00\x00\x00'
+tRp46
+ag25
+(g27
+S'\x13\x02\x00\x00\x00\x00\x00\x00'
+tRp47
+ag25
+(g27
+S'\x95\x1c\x00\x00\x00\x00\x00\x00'
+tRp48
+aa.
